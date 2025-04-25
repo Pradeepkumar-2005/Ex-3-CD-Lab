@@ -1,5 +1,5 @@
 # Ex-3-RECOGNITION-OF-A-VALID-ARITHMETIC-EXPRESSION-THAT-USES-OPERATOR-AND-USING-YACC
-# Date:
+# Date:25/04/2025
 # AIM
 To write a yacc program to recognize a valid arithmetic expression that uses operator +,- ,* and /.
 # ALGORITHM
@@ -12,6 +12,74 @@ To write a yacc program to recognize a valid arithmetic expression that uses ope
 7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
 8.	Enter an arithmetic expression as input and the tokens are identified as output.
 # PROGRAM
+```
+arth.l
+
+%{
+#include "y.tab.h"
+%}
+
+%%
+
+"="          { printf("\nOperator is EQUAL"); return ASSIGN; }
+"+"          { printf("\nOperator is PLUS"); return PLUS; }
+"-"          { printf("\nOperator is MINUS"); return MINUS; }
+"/"          { printf("\nOperator is DIVISION"); return DIVISION; }
+"*"          { printf("\nOperator is MULTIPLICATION"); return MULTIPLICATION; }
+[a-zA-Z_][a-zA-Z0-9_]*  { printf("\nIdentifier is %s", yytext); return ID; }
+[ \t]        { /* Ignore whitespace */ }
+\n           { return 0; }
+.            { printf("\nUnknown character: %s", yytext); return yytext[0]; }
+
+%%
+
+int yywrap() {
+    return 1;
+}
+
+arth.y
+%{
+#include <stdio.h>
+
+/* Declarations for tokens will come from the lexer (e.g., Flex) */
+%}
+
+%token ID PLUS MINUS MULTIPLICATION DIVISION ASSIGN
+
+%%
+
+statement:
+    ID ASSIGN E {
+        printf("\nValid arithmetic expression\n");
+    }
+;
+
+E:
+    E PLUS ID
+  | E MINUS ID
+  | E MULTIPLICATION ID
+  | E DIVISION ID
+  | ID
+;
+
+%%
+
+extern FILE *yyin;
+
+int main() {
+    yyin = stdin; // Use standard input unless redirected
+    yyparse();
+    return 0;
+}
+
+void yyerror(char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+}
+```
 # OUTPUT
+
+![Screenshot 2025-04-25 113734](https://github.com/user-attachments/assets/4a62a2c7-3422-433f-b952-181f27dc81fe)
+
+
 # RESULT
 A YACC program to recognize a valid arithmetic expression that uses operator +,-,* and / is executed successfully and the output is verified.
